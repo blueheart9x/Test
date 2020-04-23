@@ -120,6 +120,16 @@ public class CompanyManager extends BaseManager {
             );
         });
     }
+    
+    public ResponseData hello() throws Exception {
+        return this.tryCatch(() -> {
+            return new ResponseData(
+                    Status.OK.getStatusCode(),
+                    Status.OK.toString(),
+                    "Hello"
+            );
+        });
+    }
 
     @Override
     public void close() throws IOException {

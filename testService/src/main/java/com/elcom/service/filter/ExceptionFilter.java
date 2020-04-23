@@ -35,10 +35,9 @@ public class ExceptionFilter implements Filter {
     public void init(FilterConfig fConfig) throws ServletException {
         ServletContext context = null;
         try {
-
             context = fConfig.getServletContext();
-
             context.log("ExceptionFilter initialized!");
+            System.out.println("ExceptionFilter initialized!");
             InterviewConstant.ROOT_DIR = context.getRealPath("/");
         } catch (Exception e) {
             context.log("ExceptionFilter.init.Ex: " + e.toString());
@@ -48,7 +47,6 @@ public class ExceptionFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         try {
-
             /*--- Gzip filter ---*/
             if (req instanceof HttpServletRequest) {
                 HttpServletRequest request = (HttpServletRequest) req;
@@ -70,11 +68,9 @@ public class ExceptionFilter implements Filter {
                 }
             }
             /*---*/
-
             chain.doFilter(req, res);
-
         } catch (Exception ex) {
-
+            ex.printStackTrace();
             res.setContentType("application/json;charset=utf-8");
 
             // Support CORS
@@ -87,7 +83,6 @@ public class ExceptionFilter implements Filter {
             httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 
             try {
-
                 int status = 0;
                 int returnCode = 0;
                 String message = StringUtils.Empty;
@@ -95,14 +90,11 @@ public class ExceptionFilter implements Filter {
                 Exception tempEx = (Exception) th;
 
                 if (tempEx instanceof ValidationException) {
-
                     status = ((ValidationException) tempEx).getHttpStatusCode();
-
                     ValidationException validationEx = (ValidationException) tempEx;
                     if (validationEx != null && !StringUtils.isNullOrEmpty(validationEx.getCode())) {
                         returnCode = Integer.parseInt(validationEx.getCode());
                     }
-
                     message = ex.getMessage();
                 } else if (tempEx instanceof AuthorizationException) {
                     status = ((AuthorizationException) tempEx).getHttpStatusCode();
@@ -122,45 +114,29 @@ public class ExceptionFilter implements Filter {
                     message = tempEx == null ? "Internal Server Error" : tempEx.getMessage();
                 }
                 httpResponse.setStatus(status);
-
                 PrintWriter out = null;
-
                 ExceptionModelDTO result = null;
-
                 try {
-
                     out = res.getWriter();
-
                     result = new ExceptionModelDTO();
-
                     if (returnCode == 0) {
                         returnCode = status;
                     }
-
                     result.setStatus(returnCode);
                     messageProgress(result, message);
-
                     out.print(JSONConverter.toJSON(result));
-
                     out.flush();
-
                 } catch (Exception e) {
                     logger.error(
                             e.toString()
                     );
                 } finally {
-
                     if (out != null) {
                         out.close();
                     }
                 }
-
-                /*System.out.println(
-						tempEx!=null ? tempEx.getMessage() : result.getReturnMes()
-				);*/
-                logger.error(
-                        tempEx != null ? tempEx.getMessage() : result != null ? result.getMessage() : "Unknow error"
-                );
+                /*System.out.println(tempEx!=null ? tempEx.getMessage() : result.getReturnMes());*/
+                logger.error(tempEx != null ? tempEx.getMessage() : result != null ? result.getMessage() : "Unknow error");
 
             } catch (Exception e) {
                 //System.out.println(e.getMessage());
@@ -168,34 +144,23 @@ public class ExceptionFilter implements Filter {
 
                 logger.error(e.getMessage());
                 logger.error(e.getStackTrace());
-
                 httpResponse.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-
                 PrintWriter out = null;
-
                 try {
-
                     out = res.getWriter();
-
                     ExceptionModelDTO result = new ExceptionModelDTO();
                     result.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
                     messageProgress(result, e.getMessage());
-
                     out.print(JSONConverter.toJSON(result));
-
                     out.flush();
-
                 } catch (Exception e1) {
                     logger.error(e1.toString());
                 } finally {
-
                     if (out != null) {
                         out.close();
                     }
                 }
-
             }
-
         }
     }
 

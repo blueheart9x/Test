@@ -16,6 +16,7 @@ import com.elcom.model.dto.AuthorizationRequestDTO;
 import com.elcom.model.dto.ResponseSuccess;
 import com.elcom.service.BasedService;
 import com.elcom.sharedbiz.manager.AuthorizationManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Path("/v1.0/authorization")
 public class AuthorizationService extends BasedService {
@@ -38,7 +39,10 @@ public class AuthorizationService extends BasedService {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response authorized(AuthorizationRequestDTO request) throws Exception {
+    public Response authorized(String json) throws Exception {
+        System.out.println("json: " + json);
+        ObjectMapper mapper = new ObjectMapper();
+        AuthorizationRequestDTO request = mapper.convertValue(json, AuthorizationRequestDTO.class);
         try (AuthorizationManager manager = new AuthorizationManager()) {
             return ok(manager.authorized(request));
         }
