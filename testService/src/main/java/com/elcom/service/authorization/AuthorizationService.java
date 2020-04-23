@@ -39,10 +39,7 @@ public class AuthorizationService extends BasedService {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response authorized(String json) throws Exception {
-        System.out.println("json: " + json);
-        ObjectMapper mapper = new ObjectMapper();
-        AuthorizationRequestDTO request = mapper.convertValue(json, AuthorizationRequestDTO.class);
+    public Response authorized(AuthorizationRequestDTO request) throws Exception {
         try (AuthorizationManager manager = new AuthorizationManager()) {
             return ok(manager.authorized(request));
         }
