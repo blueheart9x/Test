@@ -91,8 +91,8 @@ public class AuthorizationManager extends BaseManager implements Closeable {
 
     private User getUserInfo(String accountName, String password, String loginType) throws Exception {
 
-        //User user = _commonAgg.login(accountName, password, loginType);
-        User user = null;
+        User user = _commonAgg.login(accountName, password, loginType);
+        //User user = null;
 
         if (user == null) {
             throw new AuthorizationException("This account is invalid.");
