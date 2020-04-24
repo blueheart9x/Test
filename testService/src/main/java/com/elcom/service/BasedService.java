@@ -54,6 +54,7 @@ public class BasedService {
         this.sourceIp = SecurityUtil.getSourceIp(request);
         //this.beginExecutionTime = System.currentTimeMillis();
         _authorization = new BaseAuthorization(headers);
+        //System.out.println("path: " + catalinaBase.getPath());
     }
 
     //protected User currentUser = new User();
