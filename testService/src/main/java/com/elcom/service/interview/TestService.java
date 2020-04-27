@@ -5,7 +5,6 @@
  */
 package com.elcom.service.interview;
 
-import com.elcom.business.manager.CompanyManager;
 import com.elcom.business.manager.TestManager;
 import com.elcom.service.BasedService;
 import javax.servlet.http.HttpServletRequest;
