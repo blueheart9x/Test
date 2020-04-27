@@ -6,6 +6,7 @@
 package com.elcom.service.interview;
 
 import com.elcom.business.manager.CompanyManager;
+import com.elcom.business.manager.TestManager;
 import com.elcom.service.BasedService;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -32,8 +33,8 @@ public class TestService extends BasedService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response hello(String req) throws Exception {
         System.out.println("req: " + req);
-        try (CompanyManager manager = new CompanyManager()) {
-            return ok(manager.hello());
+        try (TestManager manager = new TestManager()) {
+            return ok(manager.doProcessData(req));
         }
     }
 }
