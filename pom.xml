@@ -8,6 +8,7 @@
         <version>2.2.7.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+    
     <groupId>com.elcom</groupId>
     <artifactId>elcomProjectService</artifactId>
     <version>0.0.1</version>
