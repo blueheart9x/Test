@@ -1,0 +1,70 @@
+function call_interview(element_view="",jobId = 0,letterId = 0,pwRoom = "") {
+    function readyToCloseListener() {
+      $("#"+element_view).remove();
+    }
+    $("#loading_call_video").removeClass("hidden");
+    $("#"+element_view).html("");
+    var roomName = "j" + jobId + "l" + letterId;
+    var options = {
+        roomName: roomName,
+        width: "100%",
+        height: "100%",
+        jwt: Auth.accessToken,
+        parentNode: document.querySelector("#"+element_view),
+        configOverwrite: {
+          defaultLanguage: "VN",
+          tileViewEnabled:true
+        },
+        interfaceConfigOverwrite: {
+          SHOW_JITSI_WATERMARK: false,
+          SHOW_WATERMARK_FOR_GUESTS: false,
+          SHOW_BRAND_WATERMARK: false,
+          TOOLBAR_BUTTONS: [
+            "microphone","camera","chat","settings","filmstrip","closedcaptions","fullscreen","fodeviceselection","profile","hangup","tileview"
+          ],
+          SETTINGS_SECTIONS: ["devices", "language"],
+          VIDEO_QUALITY_LABEL_DISABLED: true,
+          DISPLAY_WELCOME_PAGE_CONTENT: false,
+          DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false
+        }
+    };
+    api_jitsi = new JitsiMeetExternalAPI(domain_jitsi, options);
+    api_jitsi.executeCommand("subject", " ");
+    // api_jitsi.executeCommand("subject", "Số người tham gia");
+    api_jitsi.executeCommand("avatarUrl", Auth.avatar);
+    api_jitsi.executeCommand("displayName", Auth.fullName ? Auth.fullName : Auth.companyName);
+    let isGuestAccess = false;
+    api_jitsi.addEventListener("passwordRequired", () => {
+        if (!isGuestAccess) {
+          isGuestAccess = true;
+          try {
+            api_jitsi.executeCommand("password", pwRoom);
+          } catch (e) {
+              console.error(e);
+          }
+        }
+    });
+    let closed = false;
+    api_jitsi.addEventListener("videoAvailabilityChanged", res => {
+        if (!closed) {
+            closed = !closed;
+            $("#loading_call_video").addClass("hidden");
+            $(".control-video ").removeClass("hidden");
+        }
+    });
+    api_jitsi.addEventListener("videoConferenceJoined", response => {
+        const numberOfParticipants = api_jitsi.getNumberOfParticipants();
+        if (!isGuestAccess && numberOfParticipants <= 1) {
+            setTimeout(() => {
+                try {
+                    api_jitsi.executeCommand("password", pwRoom);
+                } catch (e) {
+                    console.error(e);
+                }
+            }, 1000);
+        }
+    });
+    // api_jitsi.addEventListeners({
+    //     readyToClose: readyToCloseListener
+    // });
+}
