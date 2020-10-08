@@ -46,7 +46,7 @@ public class UserManagerController {
     
     @RequestMapping(value = "/redis-test", method = RequestMethod.GET)
     public ResponseEntity<String> redisTest() {
-        
+        System.out.println("redisTest...");
         String key = "my-key";
         String value = "my-value";
         redisTemplate.opsForValue().set(key, value);
@@ -73,7 +73,20 @@ public class UserManagerController {
                 for( String str : lstStr ) {
                     System.out.println("item:" + str);
                 }
-                redisTemplate.delete(keyLst);
+                //redisTemplate.delete(keyLst);
+            }
+        }
+        System.out.println("Push to right list");
+        redisTemplate.opsForList().rightPush(keyLst, "D");
+        sizeLst = redisTemplate.opsForList().size(keyLst);
+        System.out.println("Key ["+keyLst+"] contains : " + sizeLst + " element");
+        if( sizeLst!=null && !sizeLst.equals(0L) ) {
+            List<String> lstStr = (List<String>)redisTemplate.opsForList().range(keyLst, 0, -1);
+            if( lstStr!=null && !lstStr.isEmpty() ) {
+                for( String str : lstStr ) {
+                    System.out.println("item:" + str);
+                }
+                //redisTemplate.delete(keyLst);
             }
         }
 

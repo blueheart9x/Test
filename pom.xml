@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.elcom</groupId>
-    <artifactId>elcomProjectService</artifactId>
+    <artifactId>testRedisProject</artifactId>
     <version>0.0.1</version>
-    <name>elcomProjectService</name>
-    <description>Template project for API Service</description>
+    <name>testRedisProject</name>
+    <description>Test Redis project for API Service</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

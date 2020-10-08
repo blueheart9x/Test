@@ -56,10 +56,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/auth/login", "/downloadFile/**", "/rabbitmq/*"
+                .antMatchers("/auth/login", "/downloadFile/**", "/rabbitmq/*", "/redis-test", "/redis", "/redis/**", "/redis-hash", "/redis-hash/**"
                             , "/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**").permitAll() // Không authen những url này
                 .antMatchers("/users").hasAnyRole("DIRECTOR") //chỉ role "DIRECTOR" mới truy cập được "/users"
-                .antMatchers("/redis-test").hasAnyRole("SALE") //chỉ role "SALE" mới truy cập được "/redis-test"
+                //.antMatchers("/redis-test").hasAnyRole("SALE") //chỉ role "SALE" mới truy cập được "/redis-test"
                 .antMatchers("/users/**").hasAnyRole("DEFAULT") //chỉ role "DEFAULT" mới truy cập được "/users/**"
                 .anyRequest().authenticated();
         http.cors(); // Mở CORS

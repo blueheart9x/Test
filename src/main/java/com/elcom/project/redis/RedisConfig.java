@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
@@ -23,43 +25,63 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  */
 @Configuration
 public class RedisConfig {
-    
+
     @Value("${spring.redis.host}")
     private String redisHost;
 
     @Value("${spring.redis.port}")
     private int redisPort;
-    
+
     @Value("${spring.redis.password}")
     private String password;
 
-    @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
+    @Value("${spring.redis.ssl}")
+    private boolean ssl;
+
+    //@Bean
+    //public LettuceConnectionFactory redisConnectionFactory() {
         // Tạo Standalone Connection tới Redis
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(redisHost);
-        config.setPort(redisPort);
-        config.setPassword(RedisPassword.of(password));
-        return new LettuceConnectionFactory(config);
+    //    RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+    //    config.setHostName(redisHost);
+    //    config.setPort(redisPort);
+    //    config.setPassword(RedisPassword.of(password));
+
+    //    return new LettuceConnectionFactory(config);
+    //}
+
+    @Bean
+    public JedisConnectionFactory redisConnectionFactory() {
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
+        redisConfig.setHostName(redisHost);
+        redisConfig.setPort(redisPort);
+        redisConfig.setPassword(RedisPassword.of(password));
+        JedisClientConfiguration jedisConfig;
+        if (ssl) {
+            jedisConfig = JedisClientConfiguration.builder().useSsl().build();
+        } else {
+            jedisConfig = JedisClientConfiguration.builder().build();
+        }
+        JedisConnectionFactory jcf = new JedisConnectionFactory(redisConfig, jedisConfig);
+        return jcf;
     }
 
     @Bean
     @Primary
-    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, String> redisTemplate() {
         // tạo ra một RedisTemplate
         // Với Key là Object || String
         // Value là Object || String
         // RedisTemplate giúp spring-boot thao tác với Redis
-        
+
         /*RedisTemplate<Object, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         return template;*/
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
         configureSerializers(redisTemplate);
         return redisTemplate;
     }
-    
+
     private void configureSerializers(RedisTemplate<String, String> redisTemplate) {
         RedisSerializer<String> serializerKey = new StringRedisSerializer();
         redisTemplate.setKeySerializer(serializerKey);
